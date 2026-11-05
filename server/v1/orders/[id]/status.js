@@ -1,6 +1,5 @@
-import { db, setCors, send, getBearer, getUserIdFromToken } from "../../../../lib/firebase.js";
-
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send, db, getBearer, getUserIdFromToken } = deps;
   if (setCors(req, res)) return;
   if (req.method !== "PUT") return send(res, 405, { error: "Method not allowed" });
   const { id } = req.query || {};
@@ -10,7 +9,7 @@ export default async function handler(req, res) {
     return send(res, 400, { error: "Status must be created, paid, or shipped" });
   }
   try {
-    const firestore = db();
+    const firestore = await db();
     const userId = await getUserIdFromToken(firestore, getBearer(req));
     if (!userId) return send(res, 401, { error: "Authorization header with Bearer token required" });
     const ref = firestore.collection("orders").doc(id);

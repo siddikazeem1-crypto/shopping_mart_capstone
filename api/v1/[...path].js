@@ -19,6 +19,22 @@ import productById from '../../server/v1/products/[id].js';
 import productReviews from '../../server/v1/products/[id]/reviews.js';
 import sellerStats from '../../server/v1/seller/stats.js';
 
+import { setCors, send, db, hashPassword, omitPassword, generateToken, nowIso, ensureSeedUsers, getBearer, getUserIdFromToken, getUserById } from '../../lib/firebase.js';
+
+const deps = {
+  setCors,
+  send,
+  db,
+  hashPassword,
+  omitPassword,
+  generateToken,
+  nowIso,
+  ensureSeedUsers,
+  getBearer,
+  getUserIdFromToken,
+  getUserById,
+};
+
 const routes = new Map([
   ['chat', chat],
   ['health', health],
@@ -50,31 +66,31 @@ export default async function handler(req, res) {
   req.query = { ...(req.query || {}) };
   delete req.query.path;
 
-  if (routes.has(key)) return routes.get(key)(req, res);
+  if (routes.has(key)) return routes.get(key)(req, res, deps);
 
   if (segments.length === 2 && segments[0] === 'cart') {
     req.query.productId = segments[1];
-    return cartProduct(req, res);
+    return cartProduct(req, res, deps);
   }
 
   if (segments.length === 2 && segments[0] === 'orders') {
     req.query.id = segments[1];
-    return orderById(req, res);
+    return orderById(req, res, deps);
   }
 
   if (segments.length === 3 && segments[0] === 'orders' && segments[2] === 'status') {
     req.query.id = segments[1];
-    return orderStatus(req, res);
+    return orderStatus(req, res, deps);
   }
 
   if (segments.length === 2 && segments[0] === 'products') {
     req.query.id = segments[1];
-    return productById(req, res);
+    return productById(req, res, deps);
   }
 
   if (segments.length === 3 && segments[0] === 'products' && segments[2] === 'reviews') {
     req.query.id = segments[1];
-    return productReviews(req, res);
+    return productReviews(req, res, deps);
   }
 
   return notFound(res);

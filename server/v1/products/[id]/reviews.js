@@ -1,12 +1,12 @@
-import { db, setCors, send, getBearer, getUserIdFromToken, nowIso } from "../../../lib/firebase.js";
 import crypto from "node:crypto";
 
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send, db, getBearer, getUserIdFromToken, nowIso } = deps;
   if (setCors(req, res)) return;
   const { id: productId } = req.query || {};
   if (!productId) return send(res, 400, { error: "Product id required" });
   try {
-    const firestore = db();
+    const firestore = await db();
     if (req.method === "GET") {
       const snap = await firestore.collection("reviews").where("productId", "==", productId).get();
       return send(res, 200, snap.docs.map((d) => ({ id: d.id, ...d.data() })));

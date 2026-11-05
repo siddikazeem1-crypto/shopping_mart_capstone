@@ -1,4 +1,3 @@
-import { db, setCors, send, nowIso } from "../../../lib/firebase.js";
 import crypto from "node:crypto";
 
 function matches(item, q, minPrice, maxPrice) {
@@ -9,10 +8,11 @@ function matches(item, q, minPrice, maxPrice) {
   return true;
 }
 
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send, db, nowIso } = deps;
   if (setCors(req, res)) return;
   try {
-    const firestore = db();
+    const firestore = await db();
     const products = firestore.collection("products");
 
     if (req.method === "GET") {

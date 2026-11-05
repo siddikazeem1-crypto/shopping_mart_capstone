@@ -1,7 +1,7 @@
-import { db, setCors, send, hashPassword, omitPassword, nowIso, ensureSeedUsers } from "../../../../lib/firebase.js";
 import crypto from "node:crypto";
 
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send, db, hashPassword, omitPassword, nowIso, ensureSeedUsers } = deps;
   if (setCors(req, res)) return;
   if (req.method !== "POST") return send(res, 405, { error: "Method not allowed" });
   const { username, email, password, role } = req.body || {};
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return send(res, 400, { error: "Username, email, and password are required" });
   }
   try {
-    const firestore = db();
+    const firestore = await db();
     await ensureSeedUsers(firestore);
     const users = firestore.collection("users");
     const byName = await users.where("username", "==", username).limit(1).get();

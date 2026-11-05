@@ -1,6 +1,5 @@
-import { setCors, send } from "../../lib/firebase.js";
-
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send } = deps;
   if (setCors(req, res)) return;
   if (req.method !== "POST") return send(res, 405, { error: "Method not allowed" });
   const { message = "" } = req.body || {};
@@ -11,3 +10,4 @@ export default async function handler(req, res) {
   else if (message.includes("offer")) reply = "Azeem Mart bot: Check /api/v1/products/search for deals.";
   return send(res, 200, { reply, echo: message });
 }
+

@@ -8,7 +8,7 @@ async function readCart(firestore, userId) {
 export default async function handler(req, res) {
   if (setCors(req, res)) return;
   try {
-    const firestore = db();
+    const firestore = await db();
     const userId = await getUserIdFromToken(firestore, getBearer(req));
     if (!userId) return send(res, 401, { error: "Authorization header with Bearer token required" });
 

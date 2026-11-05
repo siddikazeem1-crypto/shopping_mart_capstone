@@ -1,11 +1,11 @@
-import { db, setCors, send, nowIso } from "../../../lib/firebase.js";
-
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send, db, nowIso } = deps;
   if (setCors(req, res)) return;
   const { id } = req.query || {};
   if (!id) return send(res, 400, { error: "Product id required" });
   try {
-    const ref = db().collection("products").doc(id);
+    const firestore = await db();
+    const ref = firestore.collection("products").doc(id);
 
     if (req.method === "GET") {
       const doc = await ref.get();

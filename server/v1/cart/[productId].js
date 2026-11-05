@@ -1,12 +1,11 @@
-import { db, setCors, send, getBearer, getUserIdFromToken, nowIso } from "../../../lib/firebase.js";
-
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send, db, getBearer, getUserIdFromToken, nowIso } = deps;
   if (setCors(req, res)) return;
   if (req.method !== "DELETE") return send(res, 405, { error: "Method not allowed" });
   const { productId } = req.query || {};
   if (!productId) return send(res, 400, { error: "Product id required" });
   try {
-    const firestore = db();
+    const firestore = await db();
     const userId = await getUserIdFromToken(firestore, getBearer(req));
     if (!userId) return send(res, 401, { error: "Authorization header with Bearer token required" });
     const ref = firestore.collection("carts").doc(userId);

@@ -1,13 +1,13 @@
-import { db, setCors, send } from "../../../lib/firebase.js";
-
-export default async function handler(req, res) {
+export default async function handler(req, res, deps = {}) {
+  const { setCors, send, db } = deps;
   if (setCors(req, res)) return;
   if (req.method !== "GET") return send(res, 405, { error: "Method not allowed" });
   try {
     const { q = "", minPrice = "", maxPrice = "" } = req.query || {};
     const min = minPrice === "" ? -1 : Number(minPrice);
     const max = maxPrice === "" ? -1 : Number(maxPrice);
-    const snap = await db().collection("products").get();
+    const firestore = await db();
+    const snap = await firestore.collection("products").get();
     const out = [];
     for (const d of snap.docs) {
       const p = { id: d.id, ...d.data() };
