@@ -12,7 +12,18 @@ export default async function handler(req, res, deps = {}) {
   const { setCors, send, db, nowIso } = deps;
   if (setCors(req, res)) return;
   try {
-    const firestore = await db();
+    let firestore;
+    try {
+      firestore = await db();
+    } catch (initErr) {
+      return send(res, 500, {
+        error: "firebase_init_failed",
+        message: String(initErr && initErr.message ? initErr.message : initErr),
+        hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
+        hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+        hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
+      });
+    }
     const products = firestore.collection("products");
 
     if (req.method === "GET") {
