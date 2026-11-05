@@ -53,10 +53,10 @@ const routes = new Map([
   ['seller/stats', sellerStats]
 ]);
 
-function notFound(res) {
+function notFound(res, key, rawPath, url) {
   res.statusCode = 404;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(JSON.stringify({ error: 'Not found' }));
+  res.end(JSON.stringify({ error: 'Not found', key, rawPath, url }));
 }
 
 export default async function handler(req, res) {
@@ -97,5 +97,5 @@ export default async function handler(req, res) {
     return productReviews(req, res, deps);
   }
 
-  return notFound(res);
+  return notFound(res, key, rawPath, req.url);
 }
