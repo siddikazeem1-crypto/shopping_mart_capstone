@@ -61,7 +61,7 @@ function notFound(res, key, url) {
 export default async function handler(req, res) {
   try {
     const urlPath = (req.url || '').split('?')[0];
-    const segments = urlPath.split('/').filter(Boolean);
+    let segments = urlPath.split('/').filter(Boolean);
     // Route lives at api/v1/[...path].js under api/; strip the api/v1 prefix.
     if (segments.length >= 2 && segments[0] === 'api' && segments[1] === 'v1') {
       segments = segments.slice(2);
