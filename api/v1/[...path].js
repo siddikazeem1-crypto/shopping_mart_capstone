@@ -60,15 +60,14 @@ function notFound(res, key, rawPath, url) {
 }
 
 export default async function handler(req, res) {
-  const rawPath = req.query?.path;
-  const segments = Array.isArray(rawPath) ? rawPath.filter(Boolean) : String(rawPath || '').split('/').filter(Boolean);
-  // Vercel may pass the full matched path including "api/v1"; normalize it away.
+  const urlPath = (req.url || '').split('?')[0];
+  const segments = urlPath.split('/').filter(Boolean);
+  // Route lives at api/v1/[...path].js; strip the api/v1 prefix.
   if (segments.length >= 2 && segments[0] === 'api' && segments[1] === 'v1') {
     segments = segments.slice(2);
   }
   const key = segments.join('/');
   req.query = { ...(req.query || {}) };
-  delete req.query.path;
 
   if (routes.has(key)) return routes.get(key)(req, res, deps);
 
@@ -97,5 +96,5 @@ export default async function handler(req, res) {
     return productReviews(req, res, deps);
   }
 
-  return notFound(res, key, rawPath, req.url);
+  return notFound(res, key, req.url);
 }
