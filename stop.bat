@@ -1,0 +1,6 @@
+@echo off
+echo Stopping Azeem Mart server (press Ctrl+C if running)...
+echo Stopping PostgreSQL...
+"C:\Users\Srinivasan\Downloads\sri projects\sri mart\postgresql\pgsql\bin\pg_ctl.exe" -D C:\pgsql_data stop
+echo Done.
+pause

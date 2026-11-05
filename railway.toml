@@ -1,0 +1,18 @@
+# ============================================================
+# Railway Configuration for Azeem Mart
+# ============================================================
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/v1/health"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+# Environment variables will be set in Railway dashboard:
+# - PORT (automatically set by Railway)
+# - DATABASE_URL (automatically set when you add PostgreSQL plugin)
+# - DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD (parsed from DATABASE_URL)

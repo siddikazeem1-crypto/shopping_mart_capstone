@@ -1,0 +1,41 @@
+# ============================================================
+# .dockerignore - Files to exclude from Docker build context
+# ============================================================
+
+# Build outputs
+build/
+*.exe
+*.o
+*.obj
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+pgsql.log
+
+# Local config (Railway uses environment variables)
+config/drogon.json
+
+# Batch files (Windows only)
+*.bat
+
+# Documentation (not needed in container)
+*.md
+!README.md
+
+# vcpkg
+vcpkg/
+/opt/vcpkg
