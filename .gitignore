@@ -45,3 +45,5 @@ serviceAccount*.json
 # Environment files - NEVER commit real secrets
 .env
 .env.local
+
+.vercel
