@@ -62,6 +62,10 @@ function notFound(res) {
 export default async function handler(req, res) {
   const rawPath = req.query?.path;
   const segments = Array.isArray(rawPath) ? rawPath.filter(Boolean) : String(rawPath || '').split('/').filter(Boolean);
+  // Vercel may pass the full matched path including "api/v1"; normalize it away.
+  if (segments.length >= 2 && segments[0] === 'api' && segments[1] === 'v1') {
+    segments = segments.slice(2);
+  }
   const key = segments.join('/');
   req.query = { ...(req.query || {}) };
   delete req.query.path;
