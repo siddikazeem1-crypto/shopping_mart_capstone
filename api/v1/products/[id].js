@@ -1,5 +1,7 @@
-export default async function handler(req, res, deps = {}) {
-  const { setCors, send, db, nowIso } = deps;
+import { db, setCors, send, nowIso } from '../../../lib/firebase.js';
+import crypto from "node:crypto";
+
+export default async function handler(req, res) {
   if (setCors(req, res)) return;
   const { id } = req.query || {};
   if (!id) return send(res, 400, { error: "Product id required" });

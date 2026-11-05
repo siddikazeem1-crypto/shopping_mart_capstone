@@ -1,7 +1,7 @@
+import { db, setCors, send, getBearer, getUserIdFromToken, nowIso } from '../../../lib/firebase.js';
 import crypto from "node:crypto";
 
-export default async function handler(req, res, deps = {}) {
-  const { setCors, send, db, getBearer, getUserIdFromToken, nowIso } = deps;
+export default async function handler(req, res) {
   if (setCors(req, res)) return;
   const { id: productId } = req.query || {};
   if (!productId) return send(res, 400, { error: "Product id required" });

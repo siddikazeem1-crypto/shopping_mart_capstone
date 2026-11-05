@@ -1,7 +1,7 @@
+import { db, setCors, send, hashPassword, omitPassword, nowIso, ensureSeedUsers } from '../../../lib/firebase.js';
 import crypto from "node:crypto";
 
-export default async function handler(req, res, deps = {}) {
-  const { setCors, send, db, hashPassword, omitPassword, nowIso, ensureSeedUsers } = deps;
+export default async function handler(req, res) {
   if (setCors(req, res)) return;
   if (req.method !== "POST") return send(res, 405, { error: "Method not allowed" });
   const { username, email, password, role } = req.body || {};

@@ -1,5 +1,6 @@
-export default async function handler(req, res, deps = {}) {
-  const { setCors, send, db, getBearer, getUserIdFromToken, nowIso } = deps;
+import { db, setCors, send, getBearer, getUserIdFromToken, nowIso } from '../../../lib/firebase.js';
+
+export default async function handler(req, res) {
   if (setCors(req, res)) return;
   if (req.method !== "DELETE") return send(res, 405, { error: "Method not allowed" });
   const { productId } = req.query || {};

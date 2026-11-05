@@ -1,5 +1,6 @@
-export default async function handler(req, res, deps = {}) {
-  const { setCors, send, db, hashPassword, omitPassword, generateToken, nowIso, ensureSeedUsers } = deps;
+import { db, setCors, send, hashPassword, omitPassword, generateToken, nowIso, ensureSeedUsers } from '../../../lib/firebase.js';
+
+export default async function handler(req, res) {
   if (setCors(req, res)) return;
   if (req.method !== "POST") return send(res, 405, { error: "Method not allowed" });
   const { username, password } = req.body || {};
