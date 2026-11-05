@@ -60,8 +60,9 @@ function notFound(res, key, rawPath, url) {
 }
 
 export default async function handler(req, res) {
-  const urlPath = (req.url || '').split('?')[0];
-  const segments = urlPath.split('/').filter(Boolean);
+  try {
+    const urlPath = (req.url || '').split('?')[0];
+  let segments = urlPath.split('/').filter(Boolean);
   // Route lives at api/v1/[...path].js; strip the api/v1 prefix.
   if (segments.length >= 2 && segments[0] === 'api' && segments[1] === 'v1') {
     segments = segments.slice(2);
@@ -97,4 +98,9 @@ export default async function handler(req, res) {
   }
 
   return notFound(res, key, req.url);
+  } catch (e) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify({ error: 'invocation_failed', message: String(e && e.message ? e.message : e) }));
+  }
 }
