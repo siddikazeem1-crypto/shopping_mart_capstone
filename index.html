@@ -895,11 +895,6 @@
                 showMessage('Failed to load products', 'error');
             }
         }
-                console.error('Error loading products:', error);
-                grid.innerHTML = '<div class="empty-state"><h3>Failed to load products</h3><p>Please check your connection and try again.</p></div>';
-                showMessage('Failed to load products', 'error');
-            }
-        }
 
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
