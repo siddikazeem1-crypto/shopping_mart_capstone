@@ -807,8 +807,8 @@
     </div>
 
     <script>
-        // API base - empty = same-origin (localhost dev server proxies to live Vercel)
-        const API_BASE = '';
+        // API base - points directly to live Vercel backend (no proxy needed)
+        const API_BASE = 'https://azeem-mart-capstone.vercel.app';
 
         // State
         let products = [];
@@ -880,32 +880,20 @@
 
             const headers = currentUser ? { 'Authorization': 'Bearer ' + localStorage.getItem('azeem_token') } : {};
 
-            // Try localhost proxy first, then direct Vercel as fallback
-            const endpoints = [
-                `${API_BASE}/api/v1/products`,
-                'https://azeem-mart-capstone.vercel.app/api/v1/products',
-            ];
+            try {
+                const response = await fetch(API_BASE + '/api/v1/products', { headers });
+                products = await response.json();
 
-            let lastError = null;
-            for (const endpoint of endpoints) {
-                try {
-                    const response = await fetch(endpoint, { headers });
-                    products = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(products.error || 'Failed to load products');
-                    }
-
-                    renderProducts();
-                    return;
-                } catch (error) {
-                    lastError = error;
-                    console.warn(`Failed to fetch from ${endpoint}:`, error.message);
+                if (!response.ok) {
+                    throw new Error(products.error || 'Failed to load products');
                 }
-            }
 
-            grid.innerHTML = '<div class="empty-state"><h3>Failed to load products</h3><p>Please check your connection and try again.</p></div>';
-            showMessage('Failed to load products', 'error');
+                renderProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                grid.innerHTML = '<div class="empty-state"><h3>Failed to load products</h3><p>Please check your connection and try again.</p></div>';
+                showMessage('Failed to load products', 'error');
+            }
         }
                 console.error('Error loading products:', error);
                 grid.innerHTML = '<div class="empty-state"><h3>Failed to load products</h3><p>Please check your connection and try again.</p></div>';
