@@ -1,6 +1,6 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
 
 const PORT = process.env.PORT || 3000;
 const LIVE_API = 'https://azeem-mart-capstone.vercel.app';
@@ -29,24 +29,33 @@ function serveFile(res, filePath) {
   });
 }
 
+function collectBody(req) {
+  return new Promise((resolve) => {
+    const chunks = [];
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+  });
+}
+
 async function proxyReq(req, res, apiPath) {
   const url = LIVE_API + apiPath;
-  const bodyChunks = [];
-
-  for (const chunk of await collectBody(req)) {
-    bodyChunks.push(chunk);
-  }
-  const body = Buffer.concat(bodyChunks);
+  const body = await collectBody(req);
 
   const headers = { ...req.headers };
   delete headers.host;
   delete headers.connection;
+  delete headers.origin;
 
   const liveReq = http.request(url, {
     method: req.method,
     headers,
   }, (liveRes) => {
-    res.writeHead(liveRes.statusCode, { ...liveRes.headers, 'Access-Control-Allow-Origin': '*' });
+    res.writeHead(liveRes.statusCode, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      ...liveRes.headers,
+    });
     liveRes.pipe(res);
   });
 
@@ -59,17 +68,20 @@ async function proxyReq(req, res, apiPath) {
   });
 }
 
-function collectBody(req) {
-  return new Promise((resolve) => {
-    const chunks = [];
-    req.on('data', (chunk) => chunks.push(chunk));
-    req.on('end', () => resolve(chunks));
-  });
-}
-
 const server = http.createServer(async (req, res) => {
   const url = req.url;
   const parsedUrl = new URL(url, 'http://localhost');
+
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    });
+    res.end();
+    return;
+  }
 
   // Proxy API calls to live Vercel backend
   if (parsedUrl.pathname.startsWith('/api/')) {
@@ -78,7 +90,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Serve static files
-  let filePath = path.join(__dirname, parsedUrl.pathname === '/' ? 'index.html' : '.' + parsedUrl.pathname);
+  let filePath = path.join(process.cwd(), parsedUrl.pathname === '/' ? 'index.html' : '.' + parsedUrl.pathname);
   serveFile(res, filePath);
 });
 

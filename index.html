@@ -698,7 +698,6 @@
     <header>
         <div class="top-bar">
             <a href="/" class="logo">
-                <div class="logo-icon">AM</div>
                 <span>AZEEM MART</span>
             </a>
 
@@ -848,6 +847,8 @@
             const profileBtn = document.querySelector('.profile-btn');
             const profileText = document.getElementById('profileText');
 
+            if (!profileSection || !profileText) return;
+
             if (currentUser) {
                 profileSection.style.display = 'flex';
                 profileText.textContent = currentUser.username || currentUser.email;
@@ -859,6 +860,7 @@
 
         function toggleProfileDropdown() {
             const dropdown = document.getElementById('profileDropdown');
+            if (!dropdown) return;
             dropdown.classList.toggle('show');
         }
 
@@ -876,18 +878,35 @@
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '<div class="empty-state"><h3>Loading products...</h3></div>';
 
-            try {
-                const response = await fetch(`${API_BASE}/api/v1/products`, {
-                    headers: currentUser ? { 'Authorization': 'Bearer ' + localStorage.getItem('azeem_token') } : {}
-                });
-                products = await response.json();
+            const headers = currentUser ? { 'Authorization': 'Bearer ' + localStorage.getItem('azeem_token') } : {};
 
-                if (!response.ok) {
-                    throw new Error(products.error || 'Failed to load products');
+            // Try localhost proxy first, then direct Vercel as fallback
+            const endpoints = [
+                `${API_BASE}/api/v1/products`,
+                'https://azeem-mart-capstone.vercel.app/api/v1/products',
+            ];
+
+            let lastError = null;
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint, { headers });
+                    products = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(products.error || 'Failed to load products');
+                    }
+
+                    renderProducts();
+                    return;
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`Failed to fetch from ${endpoint}:`, error.message);
                 }
+            }
 
-                renderProducts();
-            } catch (error) {
+            grid.innerHTML = '<div class="empty-state"><h3>Failed to load products</h3><p>Please check your connection and try again.</p></div>';
+            showMessage('Failed to load products', 'error');
+        }
                 console.error('Error loading products:', error);
                 grid.innerHTML = '<div class="empty-state"><h3>Failed to load products</h3><p>Please check your connection and try again.</p></div>';
                 showMessage('Failed to load products', 'error');
@@ -1150,12 +1169,23 @@
         }
 
         function logout() {
-            localStorage.removeItem('azeem_token');
-            localStorage.removeItem('azeem_user');
-            currentUser = null;
-            updateAuthUI();
-            document.getElementById('profileDropdown').classList.remove('show');
-            showMessage('Logged out successfully', 'success');
+            try {
+                localStorage.removeItem('azeem_token');
+                localStorage.removeItem('azeem_user');
+                currentUser = null;
+                updateAuthUI();
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+                showMessage('Logged out successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 800);
+            } catch (e) {
+                console.error('Logout error:', e);
+                localStorage.clear();
+                currentUser = null;
+                window.location.href = '/';
+            }
         }
 
         function showProfileDetails() {
