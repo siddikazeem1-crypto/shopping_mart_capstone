@@ -42,8 +42,8 @@
         <!-- Login Form -->
         <div id="loginForm" class="form active">
             <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="loginUsername" placeholder="Enter username">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter email">
             </div>
             <div class="form-group">
                 <label>Password</label>
@@ -135,10 +135,10 @@
         }
 
         async function login() {
-            const username = document.getElementById('loginUsername').value;
+            const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
-            if (!username || !password) {
+            if (!email || !password) {
                 showMessage('Please fill in all fields', 'error');
                 return;
             }
@@ -147,16 +147,15 @@
                 const response = await fetch(API_BASE + '/api/v1/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ email, password })
                 });
                 const data = await response.json();
 
                 if (response.ok) {
-                    showMessage('Login successful! Welcome ' + data.user.username, 'success');
-                    document.getElementById('tokenBox').textContent = 'Token: ' + data.token;
-                    document.getElementById('tokenBox').style.display = 'block';
+                    showMessage('Login successful! Welcome ' + (data.user.username || data.user.email), 'success');
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = '/';
                 } else {
                     showMessage(data.error || 'Login failed', 'error');
                 }

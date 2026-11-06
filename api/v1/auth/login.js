@@ -3,14 +3,14 @@ import { db, setCors, send, hashPassword, omitPassword, generateToken, nowIso, e
 export default async function handler(req, res) {
   if (setCors(req, res)) return;
   if (req.method !== "POST") return send(res, 405, { error: "Method not allowed" });
-  const { username, password } = req.body || {};
-  if (!username || !password) {
-    return send(res, 400, { error: "Username and password are required" });
+  const { email, password } = req.body || {};
+  if (!email || !password) {
+    return send(res, 400, { error: "Email and password are required" });
   }
   try {
     const firestore = await db();
     await ensureSeedUsers(firestore);
-    const snap = await firestore.collection("users").where("username", "==", username).limit(1).get();
+    const snap = await firestore.collection("users").where("email", "==", email).limit(1).get();
     if (snap.empty) return send(res, 401, { error: "Invalid username or password" });
     const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
     if (user.password !== hashPassword(password)) {
