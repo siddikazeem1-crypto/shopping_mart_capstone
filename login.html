@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azeem Mart - Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --accent: #ff9800;
+            --text: #333333;
+            --text-light: #666666;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+            --border: #e0e0e0;
+            --success: #4caf50;
+            --error: #f44336;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 55%, #43a047 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .notice {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 18px;
+            display: none;
+        }
+
+        .card {
+            background: var(--white);
+            width: 100%;
+            max-width: 420px;
+            border-radius: 18px;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+
+        .brand {
+            text-align: center;
+            padding: 28px 24px 0;
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--primary);
+        }
+
+        .brand-tag {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .tabs {
+            display: flex;
+            margin: 22px 24px 0;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-weight: 700;
+            color: var(--text-light);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .form {
+            display: none;
+            padding: 22px 24px 26px;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 4px;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .message {
+            margin: 0 24px 0;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .message.error {
+            background: #fdecea;
+            color: #b71c1c;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #1b5e20;
+            border: 1px solid #c8e6c9;
+        }
+
+        .guest-link {
+            display: block;
+            text-align: center;
+            margin: 0 24px 24px;
+            padding: 11px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .guest-link:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .switch-text a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .footer {
+            margin-top: 22px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="notice" id="loggedOutNotice">You have been logged out successfully.</div>
+
+    <div class="card">
+        <div class="brand">
+            <div class="brand-name">AZEEM MART</div>
+            <div class="brand-tag">Fresh groceries &amp; quality electronics, delivered to your door</div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="login">Login</div>
+            <div class="tab" data-tab="register">Register</div>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="form active" id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" autocomplete="email" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" autocomplete="current-password" placeholder="Enter your password">
+            </div>
+            <button class="btn" id="loginBtn">Login</button>
+            <div class="switch-text">New here? <a data-tab="register">Create an account</a></div>
+        </div>
+
+        <div class="form" id="registerForm">
+            <div class="form-group">
+                <label for="regUsername">Username</label>
+                <input type="text" id="regUsername" autocomplete="username" placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" autocomplete="email" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" autocomplete="new-password" placeholder="Choose a password">
+            </div>
+            <button class="btn" id="registerBtn">Register</button>
+            <div class="switch-text">Already have an account? <a data-tab="login">Login</a></div>
+        </div>
+
+        <a class="guest-link" href="index.html">Continue browsing as guest →</a>
+    </div>
+
+    <div class="footer">© 2026 Azeem Mart. All rights reserved.</div>
+
+    <script>
+        const API_BASE = 'https://azeem-mart-capstone.vercel.app';
+
+        if (localStorage.getItem('azeem_token')) {
+            window.location.href = 'index.html';
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('logout') === 'success') {
+            document.getElementById('loggedOutNotice').style.display = 'block';
+        }
+
+        const messageEl = document.getElementById('message');
+
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+            messageEl.style.display = 'block';
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+            document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+            document.getElementById('registerForm').classList.toggle('active', tab === 'register');
+            messageEl.style.display = 'none';
+        }
+
+        document.querySelectorAll('.tab, .switch-text a').forEach(el => {
+            el.addEventListener('click', () => switchTab(el.dataset.tab));
+        });
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('azeem_token', data.token);
+                    localStorage.setItem('azeem_user', JSON.stringify(data.user));
+                    showMessage('Welcome back! Redirecting…', 'success');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 600);
+                } else {
+                    showMessage(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Cannot connect to server', 'error');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            if (!username || !email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Registration successful! Redirecting to login…', 'success');
+                    switchTab('login');
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    setTimeout(() => switchTab('login'), 1200);
+                } else {
+                    showMessage(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Cannot connect to server', 'error');
+            }
+        }
+
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('registerBtn').addEventListener('click', register);
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
+        document.getElementById('regPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') register(); });
+    </script>
+</body>
+</html>

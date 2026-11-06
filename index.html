@@ -817,21 +817,21 @@
         let currentFilter = 'all';
         let searchTerm = '';
 
-        // Product images mapping (placeholder images from Unsplash)
+        // Product images - branded placeholders that always load
         const productImages = {
-            'prod-001': 'https://images.unsplash.com/photo-1586201375761-83865001e358?w=400&h=400&fit=crop',
-            'prod-002': 'https://images.unsplash.com/photo-1595588242222-708e5e682ea2?w=400&h=400&fit=crop',
-            'prod-003': 'https://images.unsplash.com/photo-1591813983997-9e75c0699ef1?w=400&h=400&fit=crop',
-            'prod-004': 'https://images.unsplash.com/photo-1556228578-0d85b6f79b8d?w=400&h=400&fit=crop',
-            'prod-005': 'https://images.unsplash.com/photo-1545092345-c28a441d4ca5?w=400&h=400&fit=crop',
-            'prod-006': 'https://images.unsplash.com/photo-1558960216-7ea68c409276?w=400&h=400&fit=crop',
-            'prod-007': 'https://images.unsplash.com/photo-1579116062771-d87f12b4a73d?w=400&h=400&fit=crop',
-            'prod-011': 'https://images.unsplash.com/photo-1527864550414-702e75b9036d?w=400&h=400&fit=crop',
-            'prod-012': 'https://images.unsplash.com/photo-1585429538466-9c30f3672b34?w=400&h=400&fit=crop',
-            'prod-013': 'https://images.unsplash.com/photo-1572569511253-d72b89c99314?w=400&h=400&fit=crop',
-            'prod-014': 'https://images.unsplash.com/photo-1545218059-77f37e8a49d5?w=400&h=400&fit=crop',
-            'prod-015': 'https://images.unsplash.com/photo-1618395643311-f3e6e5c0c45c?w=400&h=400&fit=crop',
-            'prod-016': 'https://images.unsplash.com/photo-1587829741301-dc798b93666b?w=400&h=400&fit=crop',
+            'prod-001': 'https://placehold.co/400x400/2e7d32/ffffff?text=Basmati+Rice+5kg',
+            'prod-002': 'https://placehold.co/400x400/2e7d32/ffffff?text=Wheat+Atta+10kg',
+            'prod-003': 'https://placehold.co/400x400/2e7d32/ffffff?text=Toor+Dal+1kg',
+            'prod-004': 'https://placehold.co/400x400/2e7d32/ffffff?text=Sunflower+Oil+1L',
+            'prod-005': 'https://placehold.co/400x400/2e7d32/ffffff?text=Iodized+Salt+1kg',
+            'prod-006': 'https://placehold.co/400x400/2e7d32/ffffff?text=Black+Tea+250g',
+            'prod-007': 'https://placehold.co/400x400/2e7d32/ffffff?text=Sugar+1kg',
+            'prod-011': 'https://placehold.co/400x400/1565c0/ffffff?text=Wireless+Mouse',
+            'prod-012': 'https://placehold.co/400x400/1565c0/ffffff?text=USB-C+Cable',
+            'prod-013': 'https://placehold.co/400x400/1565c0/ffffff?text=Bluetooth+Earbuds',
+            'prod-014': 'https://placehold.co/400x400/1565c0/ffffff?text=Power+Bank+10000mAh',
+            'prod-015': 'https://placehold.co/400x400/1565c0/ffffff?text=4K+HDMI+Cable',
+            'prod-016': 'https://placehold.co/400x400/1565c0/ffffff?text=Wireless+Keyboard',
         };
 
         // Initialize
@@ -910,7 +910,7 @@
             }
 
             grid.innerHTML = filtered.map(p => {
-                const imageUrl = productImages[p.id] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop';
+                const imageUrl = productImages[p.id] || 'https://placehold.co/400x400/2e7d32/ffffff?text=Azeem+Mart';
                 const inCart = cart.find(item => item.id === p.id);
                 const qty = inCart ? inCart.qty : 0;
 
@@ -1008,7 +1008,7 @@
                 total += item.price * item.qty;
                 return `
                     <div class="cart-item">
-                        <img src="${productImages[item.id] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=100&h=100&fit=crop'}" alt="${escapeHtml(item.name)}" class="cart-item-image">
+                        <img src="${productImages[item.id] || 'https://placehold.co/100x100/2e7d32/ffffff?text=AM'}" alt="${escapeHtml(item.name)}" class="cart-item-image">
                         <div class="cart-item-details">
                             <div class="cart-item-title">${escapeHtml(item.name)}</div>
                             <div class="cart-item-price">₹${Number(item.price).toFixed(2)}</div>
@@ -1159,15 +1159,14 @@
                 updateAuthUI();
                 const dropdown = document.getElementById('profileDropdown');
                 if (dropdown) dropdown.classList.remove('show');
-                showMessage('Logged out successfully', 'success');
                 setTimeout(() => {
-                    window.location.href = '/';
-                }, 800);
+                    window.location.href = 'login.html?logout=success';
+                }, 600);
             } catch (e) {
                 console.error('Logout error:', e);
                 localStorage.clear();
                 currentUser = null;
-                window.location.href = '/';
+                window.location.href = 'login.html?logout=success';
             }
         }
 
