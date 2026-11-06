@@ -817,21 +817,21 @@
         let currentFilter = 'all';
         let searchTerm = '';
 
-        // Product images - branded placeholders that always load
+        // Product images from Wikimedia Commons (verified live)
         const productImages = {
-            'prod-001': 'https://placehold.co/400x400/2e7d32/ffffff?text=Basmati+Rice+5kg',
-            'prod-002': 'https://placehold.co/400x400/2e7d32/ffffff?text=Wheat+Atta+10kg',
-            'prod-003': 'https://placehold.co/400x400/2e7d32/ffffff?text=Toor+Dal+1kg',
-            'prod-004': 'https://placehold.co/400x400/2e7d32/ffffff?text=Sunflower+Oil+1L',
-            'prod-005': 'https://placehold.co/400x400/2e7d32/ffffff?text=Iodized+Salt+1kg',
-            'prod-006': 'https://placehold.co/400x400/2e7d32/ffffff?text=Black+Tea+250g',
-            'prod-007': 'https://placehold.co/400x400/2e7d32/ffffff?text=Sugar+1kg',
-            'prod-011': 'https://placehold.co/400x400/1565c0/ffffff?text=Wireless+Mouse',
-            'prod-012': 'https://placehold.co/400x400/1565c0/ffffff?text=USB-C+Cable',
-            'prod-013': 'https://placehold.co/400x400/1565c0/ffffff?text=Bluetooth+Earbuds',
-            'prod-014': 'https://placehold.co/400x400/1565c0/ffffff?text=Power+Bank+10000mAh',
-            'prod-015': 'https://placehold.co/400x400/1565c0/ffffff?text=4K+HDMI+Cable',
-            'prod-016': 'https://placehold.co/400x400/1565c0/ffffff?text=Wireless+Keyboard',
+            'prod-001': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Basmati_Rice_India%2C_raw.jpg/500px-Basmati_Rice_India%2C_raw.jpg',
+            'prod-002': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/A_nice_bag_of_wheat_flour%21.jpg/500px-A_nice_bag_of_wheat_flour%21.jpg',
+            'prod-003': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Dal_packet.jpg/500px-Dal_packet.jpg',
+            'prod-004': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Bottle_1_liter_Sunflower_refined_oil.jpg/500px-Bottle_1_liter_Sunflower_refined_oil.jpg',
+            'prod-005': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Iodized_salt_packet.jpg/500px-Iodized_salt_packet.jpg',
+            'prod-006': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Ceylon_black_tea_leaves.jpg/500px-Ceylon_black_tea_leaves.jpg',
+            'prod-007': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Sugar_packets_20230506_163925.jpg/500px-Sugar_packets_20230506_163925.jpg',
+            'prod-011': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/A_wireless_computer_mouse.jpg/500px-A_wireless_computer_mouse.jpg',
+            'prod-012': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Black_charging_cable_type_USB-C_plugs_01.jpg/500px-Black_charging_cable_type_USB-C_plugs_01.jpg',
+            'prod-013': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/ActiveSound_wireless_earbuds_by_Hykker_%28POJM200483%29.jpg/500px-ActiveSound_wireless_earbuds_by_Hykker_%28POJM200483%29.jpg',
+            'prod-014': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Power_bank.JPG/500px-Power_bank.JPG',
+            'prod-015': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/HDMI_Cable.JPG/500px-HDMI_Cable.JPG',
+            'prod-016': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Rii_RT-MWK01_mini_wireless_keyboard_HS1.jpg/500px-Rii_RT-MWK01_mini_wireless_keyboard_HS1.jpg',
         };
 
         // Initialize
