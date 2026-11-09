@@ -711,6 +711,9 @@
                         <span>▼</span>
                     </button>
                     <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-item" id="adminDashLink" style="display:none;" onclick="window.location.href='admin.html'">
+                            <span>🛡️</span> Admin Dashboard
+                        </div>
                         <div class="dropdown-item" onclick="showProfileDetails()">
                             <span>👤</span> Profile Details
                         </div>
@@ -855,6 +858,10 @@
             } else {
                 profileSection.style.display = 'flex';
                 profileText.textContent = 'Account';
+            }
+            const adminLink = document.getElementById('adminDashLink');
+            if (adminLink) {
+                adminLink.style.display = (currentUser && currentUser.role === 'admin') ? 'block' : 'none';
             }
         }
 
