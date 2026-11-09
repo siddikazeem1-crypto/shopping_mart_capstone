@@ -6,6 +6,7 @@ import chat from '../../server/v1/chat.js';
 import health from '../../server/v1/health.js';
 import hello from '../../server/v1/hello.js';
 import adminStats from '../../server/v1/admin/stats.js';
+import adminUsers from '../../server/v1/admin/users.js';
 import authLogin from './auth/login.js';
 import authLogout from './auth/logout.js';
 import authRegister from './auth/register.js';
@@ -17,6 +18,7 @@ import ordersCheckout from '../../server/v1/orders/checkout.js';
 import productsIndex from '../../server/v1/products/index.js';
 import productsSearch from '../../server/v1/products/search.js';
 import sellerStats from '../../server/v1/seller/stats.js';
+import sellerProducts from '../../server/v1/seller/products.js';
 
 import { setCors, send, db, hashPassword, omitPassword, generateToken, nowIso, ensureSeedUsers, getBearer, getUserIdFromToken, getUserById } from '../../lib/firebase.js';
 
@@ -39,6 +41,8 @@ const routes = new Map([
   ['health', health],
   ['hello', hello],
   ['admin/stats', adminStats],
+  ['admin/users', adminUsers],
+  ['seller/products', sellerProducts],
   ['auth/login', authLogin],
   ['auth/logout', authLogout],
   ['auth/register', authRegister],
@@ -70,6 +74,17 @@ export default async function handler(req, res) {
     req.query = { ...(req.query || {}) };
 
     if (routes.has(key)) return routes.get(key)(req, res, deps);
+
+    // Prefix routes for id-based admin/seller operations (free-tier consolidation)
+    if (key.startsWith('admin/users/')) {
+      req.query.id = decodeURIComponent(key.slice('admin/users/'.length));
+      return adminUsers(req, res, deps);
+    }
+    if (key.startsWith('seller/products/')) {
+      req.query.id = decodeURIComponent(key.slice('seller/products/'.length));
+      return sellerProducts(req, res, deps);
+    }
+
     return notFound(res, key, req.url);
   } catch (e) {
     res.statusCode = 500;
