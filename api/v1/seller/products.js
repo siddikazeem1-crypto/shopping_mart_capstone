@@ -1,4 +1,4 @@
-import { db, setCors, send, nowIso, getBearer, getUserIdFromToken, getUserById, ensureSeedUsers } from "../../lib/firebase.js";
+import { db, setCors, send, nowIso, getBearer, getUserIdFromToken, getUserById, ensureSeedUsers } from "../../../lib/firebase.js";
 import crypto from "node:crypto";
 
 async function requireSeller(firestore, req, res) {

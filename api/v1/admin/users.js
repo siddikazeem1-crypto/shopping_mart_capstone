@@ -1,4 +1,4 @@
-import { db, setCors, send, hashPassword, omitPassword, nowIso, getBearer, getUserIdFromToken, getUserById, ensureSeedUsers } from "../../lib/firebase.js";
+import { db, setCors, send, hashPassword, omitPassword, nowIso, getBearer, getUserIdFromToken, getUserById, ensureSeedUsers } from "../../../lib/firebase.js";
 import crypto from "node:crypto";
 
 async function requireAdmin(firestore, req, res) {
