@@ -8,11 +8,11 @@ export default async function handler(req, res, deps = {}) {
     if (!userId) return send(res, 401, { error: "Authorization header with Bearer token required" });
     const user = omitPassword(await getUserById(firestore, userId));
     if (!user) return send(res, 401, { error: "Authorization header with Bearer token required" });
-    const products = await firestore.collection("products").get();
+    const products = await firestore.collection("products").where("sellerId", "==", userId).get();
     return send(res, 200, {
       role: user.role || "customer",
       productCount: products.size,
-      note: "Seller ownership filter planned",
+      note: "Products owned by this seller",
     });
   } catch (e) {
     return send(res, 500, { error: e.message });

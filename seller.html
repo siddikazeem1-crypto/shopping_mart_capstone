@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azeem Mart - Seller Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #222; }
+  .top-bar { background: #1565c0; color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .top-bar h1 { font-size: 20px; }
+  .top-bar button { background: #fff; color: #1565c0; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+  .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+  .card { background: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px; }
+  .card h2 { margin-bottom: 12px; font-size: 18px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+  th { background: #f0f0f0; font-weight: 600; }
+  .btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .btn-primary { background: #1565c0; color: #fff; }
+  .btn-danger { background: #c62828; color: #fff; }
+  .btn-secondary { background: #eee; color: #333; }
+  .form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .form-row input { padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; min-width: 140px; }
+  .msg { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; display: none; }
+  .msg.error { background: #ffebee; color: #c62828; display: block; }
+  .msg.success { background: #e3f2fd; color: #1565c0; display: block; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; border-radius: 10px; padding: 20px; width: 90%; max-width: 480px; }
+  .modal h3 { margin-bottom: 12px; }
+  .modal .form-group { margin-bottom: 10px; }
+  .modal .form-group label { display: block; font-size: 13px; margin-bottom: 4px; }
+  .modal .form-group input { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+  .empty { text-align: center; padding: 24px; color: #777; }
+  #loading { text-align: center; padding: 40px; color: #777; }
+  .stat { font-size: 14px; color: #555; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <h1>🏪 Azeem Mart — Seller Dashboard</h1>
+  <div>
+    <span id="sellerName" style="margin-right:12px;"></span>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="msg" class="msg"></div>
+  <div id="loading">Verifying seller access...</div>
+
+  <div id="dashboard" style="display:none;">
+    <div class="card">
+      <h2>My Store Stats</h2>
+      <div id="stats" class="stat">Loading...</div>
+    </div>
+
+    <div class="card">
+      <h2>Add Product</h2>
+      <div class="form-row">
+        <input id="np_name" placeholder="Name">
+        <input id="np_price" type="number" step="0.01" placeholder="Price">
+        <input id="np_stock" type="number" placeholder="Stock">
+        <input id="np_description" placeholder="Description">
+        <button class="btn btn-primary" onclick="addProduct()">Add</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>My Products</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Stock</th><th>Description</th><th>Actions</th></tr></thead>
+        <tbody id="productsBody"></tbody>
+      </table>
+      <div id="productsEmpty" class="empty" style="display:none;">No products in your store yet.</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editProductModal">
+  <div class="modal">
+    <h3>Edit Product</h3>
+    <input type="hidden" id="ep_id">
+    <div class="form-group"><label>Name</label><input id="ep_name"></div>
+    <div class="form-group"><label>Price</label><input id="ep_price" type="number" step="0.01"></div>
+    <div class="form-group"><label>Stock</label><input id="ep_stock" type="number"></div>
+    <div class="form-group"><label>Description</label><input id="ep_description"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('editProductModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://azeem-mart-capstone.vercel.app';
+let token = localStorage.getItem('azeem_token');
+
+function showMsg(text, type) {
+  const m = document.getElementById('msg');
+  m.textContent = text;
+  m.className = 'msg ' + type;
+  setTimeout(() => { m.className = 'msg'; }, 3000);
+}
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(API_BASE + path, { ...opts, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+function logout() {
+  if (token) fetch(API_BASE + '/api/v1/auth/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(()=>{});
+  localStorage.removeItem('azeem_token');
+  localStorage.removeItem('azeem_user');
+  localStorage.removeItem('azeem_cart');
+  window.location.href = 'index.html';
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+async function loadStats() {
+  try {
+    const s = await api('/api/v1/seller/stats');
+    document.getElementById('stats').textContent = 'Role: ' + (s.role || '') + ' | Products in your store: ' + (s.productCount ?? 0);
+  } catch (e) { document.getElementById('stats').textContent = 'Stats unavailable'; }
+}
+
+async function loadProducts() {
+  try {
+    const products = await api('/api/v1/seller/products');
+    const body = document.getElementById('productsBody');
+    body.innerHTML = products.map(p => `
+      <tr>
+        <td>${p.id}</td>
+        <td>${escapeHtml(p.name || '')}</td>
+        <td>${Number(p.price || 0).toFixed(2)}</td>
+        <td>${p.stock ?? 0}</td>
+        <td>${escapeHtml(p.description || '')}</td>
+        <td>
+          <button class="btn btn-secondary" onclick="editProduct('${p.id}')">Edit</button>
+          <button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button>
+        </td>
+      </tr>`).join('');
+    document.getElementById('productsEmpty').style.display = products.length ? 'none' : 'block';
+  } catch (e) { showMsg(e.message, 'error'); }
+}
+
+async function addProduct() {
+  try {
+    const name = document.getElementById('np_name').value.trim();
+    const price = document.getElementById('np_price').value;
+    const stock = document.getElementById('np_stock').value;
+    const description = document.getElementById('np_description').value.trim();
+    if (!name || price === '') { showMsg('Name and price required', 'error'); return; }
+    await api('/api/v1/seller/products', { method: 'POST', body: JSON.stringify({ name, price: Number(price), stock: Number(stock || 0), description }) });
+    showMsg('Product added', 'success');
+    document.getElementById('np_name').value = '';
+    document.getElementById('np_price').value = '';
+    document.getElementById('np_stock').value = '';
+    document.getElementById('np_description').value = '';
+    loadProducts();
+    loadStats();
+  } catch (e) { showMsg(e.message, 'error'); }
+}
+
+async function editProduct(id) {
+  try {
+    const p = await api('/api/v1/seller/products/' + encodeURIComponent(id));
+    document.getElementById('ep_id').value = p.id;
+    document.getElementById('ep_name').value = p.name || '';
+    document.getElementById('ep_price').value = p.price ?? '';
+    document.getElementById('ep_stock').value = p.stock ?? '';
+    document.getElementById('ep_description').value = p.description || '';
+    document.getElementById('editProductModal').classList.add('show');
+  } catch (e) { showMsg(e.message, 'error'); }
+}
+
+async function saveProduct() {
+  try {
+    const id = document.getElementById('ep_id').value;
+    const body = {
+      name: document.getElementById('ep_name').value.trim(),
+      price: Number(document.getElementById('ep_price').value),
+      stock: Number(document.getElementById('ep_stock').value),
+      description: document.getElementById('ep_description').value.trim(),
+    };
+    await api('/api/v1/seller/products/' + encodeURIComponent(id), { method: 'PUT', body: JSON.stringify(body) });
+    showMsg('Product updated', 'success');
+    closeModal('editProductModal');
+    loadProducts();
+  } catch (e) { showMsg(e.message, 'error'); }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  try {
+    await api('/api/v1/seller/products/' + encodeURIComponent(id), { method: 'DELETE' });
+    showMsg('Product deleted', 'success');
+    loadProducts();
+    loadStats();
+  } catch (e) { showMsg(e.message, 'error'); }
+}
+
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+(async function init() {
+  if (!token) { window.location.href = 'index.html'; return; }
+  try {
+    const u = await api('/api/v1/auth/validate');
+    const role = u.role || 'customer';
+    if (role !== 'seller' && role !== 'admin') { window.location.href = 'index.html'; return; }
+    localStorage.setItem('azeem_user', JSON.stringify(u));
+    document.getElementById('sellerName').textContent = u.username || u.email;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadStats();
+    loadProducts();
+  } catch (e) {
+    window.location.href = 'index.html';
+  }
+})();
+</script>
+</body>
+</html>

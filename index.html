@@ -714,6 +714,9 @@
                         <div class="dropdown-item" id="adminDashLink" style="display:none;" onclick="window.location.href='admin.html'">
                             <span>🛡️</span> Admin Dashboard
                         </div>
+                        <div class="dropdown-item" id="sellerDashLink" style="display:none;" onclick="window.location.href='seller.html'">
+                            <span>🏪</span> Seller Dashboard
+                        </div>
                         <div class="dropdown-item" onclick="showProfileDetails()">
                             <span>👤</span> Profile Details
                         </div>
@@ -862,6 +865,11 @@
             const adminLink = document.getElementById('adminDashLink');
             if (adminLink) {
                 adminLink.style.display = (currentUser && currentUser.role === 'admin') ? 'block' : 'none';
+            }
+            const sellerLink = document.getElementById('sellerDashLink');
+            if (sellerLink) {
+                const r = currentUser && currentUser.role;
+                sellerLink.style.display = (r === 'seller' || r === 'admin') ? 'block' : 'none';
             }
         }
 
